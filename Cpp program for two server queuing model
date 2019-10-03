@@ -1,0 +1,118 @@
+#include<iostream>
+#include<conio>
+#include<stdio>
+
+// Templates for min and max functions
+template <class T> const T& max (const T& a, const T& b) {
+                return (a<b)?b:a;     // or: return comp(a,b)?b:a; for version (2)
+}
+
+template <class T> const T& min (const T& a, const T& b) {
+                return (a>b)?b:a;     // or: return comp(a,b)?b:a; for version (2)
+}
+
+// Main Function
+int main(){
+// Variable Declaration
+int const n=6;
+int IDT[n][2], DIF, CDT[n][2], M, MNDT, QL[n], QLT=0, NAT, NDT[2], CAT[n], SERV[2], WT[n];
+int AT[n],ST[n];
+
+// Input From User
+cout<<"Enter Inter-arrival time: \n";
+for(int i=0;i<n;i++)
+                                cin>>AT[i];
+cout<<"Enter service time: \n";
+for(int i=0;i<n;i++)
+cin>>ST[i];
+
+
+// Intializations                                                          
+                for(int K=0;K<n;K++){
+                                QL[K]=0;
+WT[K]=0;
+for(int L=0;L<2;L++){
+                IDT[K][L]=0;
+CDT[K][L]=0;
+}
+}
+CAT[0]=AT[0];
+for (int i = 1; i<n;i++)
+                                CAT[i] = CAT[i-1] + AT[i];
+NAT=CAT[2];
+NDT[0]=CDT[0][0]=ST[0];
+NDT[1]=CDT[1][1]=CAT[1]+ST[1];
+IDT[1][1]=CAT[2];
+SERV[0]=0;
+SERV[1]=1;
+int I =2;
+
+                // Calculations
+Z: MNDT = min(NDT[0],NDT[1]);
+if(NDT[0]<=NDT[1])
+                                M=0;
+else
+                                M=1;
+W: if(I<=n-1){
+DIF = NAT - MNDT;
+if( DIF < 0 ){
+QLT = QLT + 1;
+WT[I]=-CAT[I]+CDT[SERV[M]][M];
+QL[I] = QLT;
+I++;
+NAT=CAT[I];
+goto W;
+                                }
+else if(DIF == 0){
+SERV[M] = max(SERV[0],SERV[1]) + 1;
+NDT[M] = NDT[M] + ST[SERV[M]];
+CDT[SERV[M]][M] = NDT[M];
+QL[I] = QLT;
+I++;
+NAT = CAT[I];
+}
+else{
+if(QLT > 0){
+QLT = QLT -1;
+SERV[M] = max(SERV[0],SERV[1]) + 1;
+NDT[M] = NDT[M] + ST[SERV[M]];
+CDT[SERV[M]][M] = NDT[M];
+}
+else{
+IDT[I][M]=DIF;
+SERV[M] = I;
+NDT[M] = NAT + ST[I];
+CDT[I][M] = NDT[M];
+I++;
+NAT = CAT[I];
+}
+}
+}
+else{
+QLT = QLT -1;
+SERV[M] = max(SERV[0],SERV[1]) + 1;
+NDT[M] = NDT[M] + ST[SERV[M]];
+CDT[SERV[M]][M] = NDT[M];
+}
+if(SERV[M]<n-1)
+                   goto Z;
+
+//Display Results
+cout<<"\nCAT =\t";
+for (int i = 0; i<n;i++)
+cout<<"\t";cout<<CAT[i];
+                cout<<"\nCDT[1] =";
+for (int i = 0; i<n;i++)
+cout<<"\t";cout<<CDT[i][0];
+cout<<"\nCDT[2] =";
+for (int i = 0; i<n;i++)
+cout<<"\t";cout<<CDT[i][1];
+cout<<"\nQL =\t";
+for (int i = 0; i<n;i++)
+cout<<"\t";cout<<QL[i];
+cout<<"\nWT =\t";
+for (int i = 0; i<n;i++)
+cout<<"\t";cout<<WT[i];
+
+getch();
+return 0;
